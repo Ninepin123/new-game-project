@@ -1,0 +1,155 @@
+[gd_scene format=3 uid="uid://cuhmigac3i83y"]
+
+[ext_resource type="PackedScene" uid="uid://c1player2dabc" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="Texture2D" uid="uid://d1687thgbu7ha" path="res://textures/bg_texture.png" id="2_bg"]
+[ext_resource type="Texture2D" uid="uid://byl5kvp6barto" path="res://textures/ground_texture.png" id="3_ground"]
+[ext_resource type="Texture2D" uid="uid://ml7wuktvfs8d" path="res://textures/obstacle_texture.png" id="4_obstacle"]
+[ext_resource type="PackedScene" uid="uid://benemy2dgmb01" path="res://scenes/enemy.tscn" id="5_tefeu"]
+[ext_resource type="PackedScene" uid="uid://dkm2ykblrcguq" path="res://scenes/mushroom.tscn" id="6_o6xl0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(2400, 60)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(40, 800)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_platform"]
+size = Vector2(220, 30)
+
+[node name="Main" type="Node2D" unique_id=20554625]
+
+[node name="Background" type="TextureRect" parent="." unique_id=1511987930]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -1185.0
+offset_top = -600.0
+offset_right = 1667.0
+offset_bottom = 481.0
+texture = ExtResource("2_bg")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Player" parent="." unique_id=530233635 instance=ExtResource("1_player")]
+position = Vector2(-41, 385)
+
+[node name="Ground" type="StaticBody2D" parent="." unique_id=1447286007]
+position = Vector2(0, 480)
+
+[node name="GroundShape" type="CollisionShape2D" parent="Ground" unique_id=1977448411]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="GroundVisual" type="TextureRect" parent="Ground" unique_id=1099669365]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -1197.0
+offset_top = -30.0
+offset_right = 10812.999
+offset_bottom = 260.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_ground")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="WallLeft" type="StaticBody2D" parent="." unique_id=1686039951]
+position = Vector2(-1180, 50)
+
+[node name="WallLeftShape" type="CollisionShape2D" parent="WallLeft" unique_id=793978200]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallLeftVisual" type="TextureRect" parent="WallLeft" unique_id=344510967]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -20.0
+offset_top = -400.0
+offset_right = 20.0
+offset_bottom = 400.0
+texture = ExtResource("4_obstacle")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="WallRight" type="StaticBody2D" parent="." unique_id=1367409031]
+position = Vector2(1180, 50)
+
+[node name="WallRightShape" type="CollisionShape2D" parent="WallRight" unique_id=1601294437]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="WallRightVisual" type="TextureRect" parent="WallRight" unique_id=682318006]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -20.0
+offset_top = -400.0
+offset_right = 225.0
+offset_bottom = 3594.9995
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_obstacle")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="PlatformA" type="StaticBody2D" parent="." unique_id=919130783]
+position = Vector2(-400, 320)
+
+[node name="PlatformAShape" type="CollisionShape2D" parent="PlatformA" unique_id=714758386]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="PlatformAVisual" type="TextureRect" parent="PlatformA" unique_id=1145638259]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -110.0
+offset_top = -15.0
+offset_right = 989.9999
+offset_bottom = 135.0
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_obstacle")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="PlatformB" type="StaticBody2D" parent="." unique_id=354566766]
+position = Vector2(150, 200)
+
+[node name="PlatformBShape" type="CollisionShape2D" parent="PlatformB" unique_id=55634619]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="PlatformBVisual" type="TextureRect" parent="PlatformB" unique_id=399320732]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -109.0
+offset_top = -15.0
+offset_right = 975.9999
+offset_bottom = 134.99994
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("4_obstacle")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="PlatformC" type="StaticBody2D" parent="." unique_id=527225657]
+position = Vector2(550, 80)
+
+[node name="PlatformCShape" type="CollisionShape2D" parent="PlatformC" unique_id=303996547]
+shape = SubResource("RectangleShape2D_platform")
+
+[node name="PlatformCVisual" type="TextureRect" parent="PlatformC" unique_id=1316643726]
+texture_filter = 1
+texture_repeat = 2
+offset_left = -110.0
+offset_top = -15.0
+offset_right = 110.0
+offset_bottom = 15.0
+texture = ExtResource("4_obstacle")
+expand_mode = 1
+stretch_mode = 1
+
+[node name="Enemy1" parent="." unique_id=1768691539 instance=ExtResource("5_tefeu")]
+position = Vector2(-250, 421)
+direction = 1
+
+[node name="Enemy2" parent="." unique_id=1174413199 instance=ExtResource("5_tefeu")]
+position = Vector2(300, 421)
+
+[node name="Enemy3" parent="." unique_id=88556010 instance=ExtResource("5_tefeu")]
+position = Vector2(700, 421)
+
+[node name="Mushroom1" parent="." unique_id=1791734827 instance=ExtResource("6_o6xl0")]
+position = Vector2(130, 429)
+
+[node name="Mushroom2" parent="." unique_id=1131027476 instance=ExtResource("6_o6xl0")]
+position = Vector2(850, 427)

@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+## 玩家死亡時發出，由 level.gd 接收以顯示「你輸了」死亡畫面。
+signal died
+
 const SPEED := 220.0
 const JUMP_VELOCITY := -420.0
 const STOMP_BOUNCE := -300.0
@@ -96,8 +99,10 @@ func _start_invulnerability() -> void:
 	invulnerable = false
 
 func _die() -> void:
+	if _dead:
+		return
 	_dead = true
 	velocity = Vector2.ZERO
-	create_tween().tween_property(sprite, "modulate:a", 0.0, 0.5)
-	await get_tree().create_timer(0.8).timeout
-	get_tree().reload_current_scene()
+	create_tween().tween_property(sprite, "modulate:a", 0.0, 0.45)
+	await get_tree().create_timer(0.55).timeout
+	died.emit()

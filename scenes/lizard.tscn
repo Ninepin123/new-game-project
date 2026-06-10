@@ -1,0 +1,32 @@
+[gd_scene format=3 uid="uid://bli0ardmob401"]
+
+[ext_resource type="Script" path="res://scripts/lizard.gd" id="1_script"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
+size = Vector2(84, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(92, 54)
+
+[node name="Lizard" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 2
+scale = Vector2(0.5, 0.5)
+offset = Vector2(0, -44)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_body")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="HitboxShape" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("RectangleShape2D_hit")
+
+[node name="LedgeRay" type="RayCast2D" parent="."]
+position = Vector2(36, 0)
+target_position = Vector2(0, 42)

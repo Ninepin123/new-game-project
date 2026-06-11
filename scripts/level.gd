@@ -13,6 +13,7 @@ const PLATFORM_TEX := preload("res://textures/obstacle_texture.png")
 const LEVEL_SELECT := "res://scenes/level_select.tscn"
 
 const GROUND_TOP := 450.0
+const PLAYER_START_X := -41.0
 
 @onready var _content: Node2D = $Content
 @onready var _player: CharacterBody2D = $Player
@@ -30,6 +31,7 @@ var _bgm: AudioStreamPlayer
 func _ready() -> void:
 	_level_index = clampi(GameState.selected_level, 1, GameState.TOTAL_LEVELS)
 	_level_data = GameState.LEVELS[_level_index - 1]
+	_place_player_on_ground()
 	_build_level()
 	_build_ui()
 	_start_bgm()
@@ -50,6 +52,14 @@ func _start_bgm() -> void:
 
 # ---------------------------------------------------------------- 關卡內容生成
 
+func _place_player_on_ground() -> void:
+	var shape_node := _player.get_node_or_null("CollisionShape2D") as CollisionShape2D
+	if shape_node == null or not shape_node.shape is RectangleShape2D:
+		_player.position = Vector2(PLAYER_START_X, 409.0)
+		return
+	var rect := shape_node.shape as RectangleShape2D
+	_player.position = Vector2(PLAYER_START_X, GROUND_TOP - rect.size.y * 0.5 - shape_node.position.y)
+
 func _build_level() -> void:
 	for p in _level_data.get("platforms", []):
 		_spawn_platform(p["x"], p["y"], p["w"])
@@ -57,6 +67,8 @@ func _build_level() -> void:
 		var enemy := EnemyScene.instantiate()
 		enemy.position = e
 		_content.add_child(enemy)
+	for e in _level_data.get("falling_enemies", []):
+		_spawn_delayed_enemy(e)
 	for l in _level_data.get("lizards", []):
 		var lizard := LizardScene.instantiate()
 		lizard.position = l
@@ -70,6 +82,25 @@ func _build_level() -> void:
 		mush.position = m
 		_content.add_child(mush)
 	_spawn_goal(_level_data.get("goal_x", 1080.0))
+
+
+func _spawn_delayed_enemy(data: Dictionary) -> void:
+	var delay: float = float(data.get("delay", 1.0))
+	await get_tree().create_timer(delay).timeout
+	var interval: float = float(data.get("interval", 0.0))
+	while not _ended:
+		var enemy := EnemyScene.instantiate()
+		enemy.position = Vector2(_falling_enemy_x(data), float(data.get("y", -120.0)))
+		_content.add_child(enemy)
+		if interval <= 0.0:
+			return
+		await get_tree().create_timer(interval).timeout
+
+
+func _falling_enemy_x(data: Dictionary) -> float:
+	if data.has("x_min") and data.has("x_max"):
+		return randf_range(float(data["x_min"]), float(data["x_max"]))
+	return float(data.get("x", 0.0))
 
 
 func _spawn_platform(x: float, y_top: float, w: float) -> void:

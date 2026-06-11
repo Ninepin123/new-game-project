@@ -1,6 +1,8 @@
 extends Area2D
 ## 超級蘑菇道具：玩家碰到後讓玩家變大（grow）。
 
+const Sfx := preload("res://scripts/sfx.gd")
+
 var _collected := false
 
 @onready var sprite: Sprite2D = $Sprite2D
@@ -18,6 +20,7 @@ func _on_body_entered(body: Node) -> void:
 	if _collected or not body.is_in_group("player"):
 		return
 	_collected = true
+	Sfx.play(self, "power_up", -4.0)
 	if body.has_method("grow"):
 		body.grow()
 	# 收集動畫後移除

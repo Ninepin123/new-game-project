@@ -3,6 +3,8 @@ extends CharacterBody2D
 ## 行為：在地面左右巡邏，碰到牆壁或走到平台邊緣會自動轉向。
 ## 互動：被玩家從上方踩到 → 壓扁死亡並讓玩家彈跳；從側面碰到 → 傷害玩家。
 
+const Sfx := preload("res://scripts/sfx.gd")
+
 const SPEED := 70.0
 const GRAVITY := 980.0
 const EDGE_OFFSET := 30.0
@@ -56,6 +58,7 @@ func _on_hitbox_body_entered(body: Node) -> void:
 func _squash() -> void:
 	_dead = true
 	velocity = Vector2.ZERO
+	Sfx.play(self, "stomp", -4.0)
 	set_deferred("collision_layer", 0)
 	hitbox.set_deferred("monitoring", false)
 	var tw := create_tween()

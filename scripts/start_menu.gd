@@ -1,5 +1,6 @@
 extends Control
 
+const Sfx := preload("res://scripts/sfx.gd")
 const GAME_SCENE := "res://scenes/level_select.tscn"
 const BACKGROUND_TEXTURE := preload("res://textures/bg_texture.png")
 const HERO_TEXTURE := preload("res://main_character.png")
@@ -170,6 +171,8 @@ func _play_idle_animation() -> void:
 		.as_relative().set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 func _start_game() -> void:
+	# 音效節點掛在 root 下，不會因場景切換被中斷
+	Sfx.play(self, "game_start", -3.0)
 	get_tree().change_scene_to_file(GAME_SCENE)
 
 func _quit_game() -> void:

@@ -3,6 +3,8 @@ extends Node2D
 ## 依 GameState.selected_level 動態生成平台、敵人、蘑菇與終點旗，
 ## 並提供「你輸了」死亡畫面（含復活按鈕）與「過關！」勝利畫面。
 
+const Sfx := preload("res://scripts/sfx.gd")
+const BGM_STREAM := preload("res://audio/background_music.mp3")
 const EnemyScene := preload("res://scenes/enemy.tscn")
 const LizardScene := preload("res://scenes/lizard.tscn")
 const BurrowerScene := preload("res://scenes/burrower.tscn")
@@ -22,6 +24,7 @@ var _ended := false
 var _ui: CanvasLayer
 var _death_panel: Control
 var _win_panel: Control
+var _bgm: AudioStreamPlayer
 
 
 func _ready() -> void:
@@ -29,8 +32,20 @@ func _ready() -> void:
 	_level_data = GameState.LEVELS[_level_index - 1]
 	_build_level()
 	_build_ui()
+	_start_bgm()
 	if not _player.died.is_connected(_on_player_died):
 		_player.died.connect(_on_player_died)
+
+
+func _start_bgm() -> void:
+	# const 的屬性不可賦值（parser error），先取到 var 再設 loop（同一共享資源）
+	var stream: AudioStreamMP3 = BGM_STREAM
+	stream.loop = true
+	_bgm = AudioStreamPlayer.new()
+	_bgm.stream = stream
+	_bgm.volume_db = -12.0
+	add_child(_bgm)
+	_bgm.play()
 
 
 # ---------------------------------------------------------------- 關卡內容生成
@@ -60,6 +75,7 @@ func _build_level() -> void:
 func _spawn_platform(x: float, y_top: float, w: float) -> void:
 	var body := StaticBody2D.new()
 	body.position = Vector2(x, y_top + 15.0)
+	body.add_to_group("concrete")  # 玩家落地時依此群組選擇混凝土落地音
 
 	var shape := CollisionShape2D.new()
 	var rect := RectangleShape2D.new()
@@ -233,6 +249,8 @@ func _on_player_died() -> void:
 	if _ended:
 		return
 	_ended = true
+	_bgm.stop()
+	Sfx.play(self, "game_over", -3.0)
 	_show_panel(_death_panel)
 
 
@@ -240,6 +258,8 @@ func _on_goal_reached(body: Node) -> void:
 	if _ended or not body.is_in_group("player"):
 		return
 	_ended = true
+	_bgm.stop()
+	Sfx.play(self, "victory", -3.0)
 	_show_panel(_win_panel)
 
 

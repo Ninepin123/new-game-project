@@ -3,9 +3,13 @@ extends CharacterBody2D
 ## 玩家死亡時發出，由 level.gd 接收以顯示「你輸了」死亡畫面。
 signal died
 
+const Sfx := preload("res://scripts/sfx.gd")
+const WALK_STREAM := preload("res://audio/walking.mp3")
+
 const SPEED := 220.0
 const JUMP_VELOCITY := -420.0
 const STOMP_BOUNCE := -300.0
+const LAND_SFX_MIN_FALL_SPEED := 150.0  # 出生小幅落地不出聲，跳躍／墜落才會
 
 # 小／大兩種狀態的外觀與碰撞尺寸
 const SMALL_SCALE := Vector2(0.375, 0.375)
@@ -19,12 +23,22 @@ const ANIM_SPEED := 8.0 # Frames per second
 var is_big := false
 var invulnerable := false
 var _dead := false
+var _was_on_floor := false
+
+var _walk_sfx: AudioStreamPlayer
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var body_shape: CollisionShape2D = $CollisionShape2D
 
 func _ready() -> void:
 	add_to_group("player")
+	# const 的屬性不可賦值（parser error），先取到 var 再設 loop（同一共享資源）
+	var walk_stream: AudioStreamMP3 = WALK_STREAM
+	walk_stream.loop = true
+	_walk_sfx = AudioStreamPlayer.new()
+	_walk_sfx.stream = walk_stream
+	_walk_sfx.volume_db = -10.0
+	add_child(_walk_sfx)
 
 func _physics_process(delta: float) -> void:
 	if _dead:
@@ -35,6 +49,7 @@ func _physics_process(delta: float) -> void:
 
 	if Input.is_action_just_pressed("ui_accept") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
+		Sfx.play(self, "jump", -6.0)
 
 	var direction := Input.get_axis("ui_left", "ui_right")
 	if direction != 0.0:
@@ -55,7 +70,31 @@ func _physics_process(delta: float) -> void:
 		# Jump/Fall frame
 		sprite.frame = 2
 
+	var fall_speed := velocity.y
 	move_and_slide()
+	_update_ground_sfx(fall_speed)
+
+## 落地音與走路循環音
+func _update_ground_sfx(fall_speed: float) -> void:
+	var on_floor := is_on_floor()
+	if on_floor and not _was_on_floor and fall_speed > LAND_SFX_MIN_FALL_SPEED:
+		Sfx.play(self, _landing_sfx_name(), -6.0)
+	_was_on_floor = on_floor
+
+	var walking: bool = on_floor and absf(velocity.x) > 20.0
+	if walking and not _walk_sfx.playing:
+		_walk_sfx.play()
+	elif not walking and _walk_sfx.playing:
+		_walk_sfx.stop()
+
+## 落在平台（concrete 群組）與泥土地面播不同音效
+func _landing_sfx_name() -> String:
+	for i in get_slide_collision_count():
+		var col := get_slide_collision(i)
+		var collider: Object = col.get_collider()
+		if col.get_normal().y < -0.5 and collider is Node and (collider as Node).is_in_group("concrete"):
+			return "land_concrete"
+	return "land_dirt"
 
 ## 踩踏敵人後的彈跳
 func bounce() -> void:
@@ -103,6 +142,7 @@ func _die() -> void:
 		return
 	_dead = true
 	velocity = Vector2.ZERO
+	_walk_sfx.stop()
 	create_tween().tween_property(sprite, "modulate:a", 0.0, 0.45)
 	await get_tree().create_timer(0.55).timeout
 	died.emit()

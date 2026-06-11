@@ -4,6 +4,8 @@ extends CharacterBody2D
 ## 探頭後開始緩慢追擊，貼近玩家時張嘴撕咬；玩家離開範圍便縮回地底。
 ## 互動：鑽出期間被玩家從上方踩到 → 翻肚死亡；從側面碰到 → 傷害玩家。
 
+const Sfx := preload("res://scripts/sfx.gd")
+
 const GRAVITY := 980.0
 const CHASE_SPEED := 55.0
 const EDGE_OFFSET := 40.0
@@ -167,6 +169,7 @@ func _on_hitbox_body_entered(body: Node) -> void:
 func _die() -> void:
 	_state = State.DEAD
 	velocity = Vector2.ZERO
+	Sfx.play(self, "stomp", -4.0)
 	set_deferred("collision_layer", 0)
 	hitbox.set_deferred("monitoring", false)
 	_show_frame("dead")

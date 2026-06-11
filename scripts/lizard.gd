@@ -4,6 +4,8 @@ extends CharacterBody2D
 ## 接著朝玩家方向跳撲，落地揚起塵土後繼續巡邏（有偵測冷卻避免連跳）。
 ## 互動：被玩家從上方踩到 → 死亡；從側面碰到 → 傷害玩家。
 
+const Sfx := preload("res://scripts/sfx.gd")
+
 const SPEED := 60.0
 const GRAVITY := 980.0
 const EDGE_OFFSET := 36.0
@@ -138,6 +140,7 @@ func _on_hitbox_body_entered(body: Node) -> void:
 func _die() -> void:
 	_state = State.DEAD
 	velocity = Vector2.ZERO
+	Sfx.play(self, "stomp", -4.0)
 	set_deferred("collision_layer", 0)
 	hitbox.set_deferred("monitoring", false)
 	sprite.texture = TEX.dead

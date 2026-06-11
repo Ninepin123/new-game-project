@@ -4,7 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://paile2qymf4c" path="res://main_character.png" id="2_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_body"]
-size = Vector2(60, 110)
+size = Vector2(45, 82)
 
 [node name="Player" type="CharacterBody2D" unique_id=1756777156]
 collision_layer = 2
@@ -12,7 +12,7 @@ script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=268938152]
 texture_filter = 1
-scale = Vector2(0.375, 0.375)
+scale = Vector2(0.28, 0.28)
 texture = ExtResource("2_tex")
 hframes = 4
 

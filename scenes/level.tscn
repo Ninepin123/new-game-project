@@ -26,7 +26,7 @@ expand_mode = 1
 stretch_mode = 6
 
 [node name="Player" parent="." unique_id=1079608880 instance=ExtResource("2_player")]
-position = Vector2(-41, 385)
+position = Vector2(-41, 409)
 
 [node name="Ground" type="StaticBody2D" parent="." unique_id=1561599534]
 position = Vector2(0, 480)

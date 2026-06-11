@@ -163,8 +163,16 @@ func _on_hitbox_body_entered(body: Node) -> void:
 		_die()
 		if body.has_method("bounce"):
 			body.bounce()
-	elif body.has_method("hit"):
+	elif body.has_method("hit") and _can_damage_player(body):
 		body.hit()
+
+func _can_damage_player(body: Node) -> bool:
+	return not body.has_method("can_take_enemy_contact_damage") or body.can_take_enemy_contact_damage()
+
+func take_magic_hit() -> void:
+	if _state == State.DEAD:
+		return
+	_die()
 
 func _die() -> void:
 	_state = State.DEAD
